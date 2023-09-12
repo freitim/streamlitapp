@@ -203,6 +203,30 @@ feature_opts = {
 #     "Dog's Age": "AlterVHundLang",
 #     "Fur Color": "HundefarbeText",
 # }
+x_margins = {
+    "Age Group": -0.1,
+    "Owner's Sex": -0.04,
+    "Dog's Sex": 0,
+    "Breed Mix": -0.26,
+}
+y_margins = {
+    "Age Group": -0.16,
+    "Owner's Sex": 0,
+    "Dog's Sex": 0,
+    "Breed Mix": -0.16,
+}
+x_p_margin = {
+    "Age Group": {"l": 150},
+    "Owner's Sex": {"l": 100},
+    "Dog's Sex": {"l": 80},
+    "Breed Mix": {"l": 300},
+}
+y_p_margin = {
+    "Age Group": {"b": 150},
+    "Owner's Sex": {"b": 80},
+    "Dog's Sex": {"b": 80},
+    "Breed Mix": {"b": 150},
+}
 
 selection_x = l_col.selectbox("X-Axis Feature", options=feature_opts)
 selection_y = l_col.selectbox(
@@ -212,6 +236,12 @@ selection_y = l_col.selectbox(
 
 feature_x = feature_opts[selection_x]
 feature_y = feature_opts[selection_y]
+
+x_off = x_margins[selection_y]
+y_off = y_margins[selection_x]
+
+pm_x = x_p_margin[selection_y]
+pm_y = y_p_margin[selection_x]
 
 feat_feat = (
     df.groupby(["StichtagDatJahr", feature_x, feature_y])["AnzHunde"]
@@ -265,11 +295,11 @@ fig.update_layout(
         "colorscale": cmap_cont,
         "colorbar": {"title": {"text": "Number<br>of Dogs"}},
     },
-    margin={"l": 123, "b": 100},
+    margin={**pm_x, **pm_y},
 )
 
-fig.layout.annotations[-2].update(y=-0.08)
-fig.layout.annotations[-1].update(x=-0.075)
+fig.layout.annotations[-2].update(y=y_off)
+fig.layout.annotations[-1].update(x=x_off)
 
 r_col.plotly_chart(fig)
 
