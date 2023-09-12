@@ -193,7 +193,17 @@ right_column.plotly_chart(fig)
 ## 2nd figure ##################################################################
 l_col, r_col = st.columns([1, 5])
 
-feature_opts = {"Age Group": "AlterV10Lang", "Owner's Sex": "SexLang"}
+feature_opts = {
+    "Age Group": "AlterV10Lang",
+    "Owner's Sex": "SexLang",
+    "Dog's Sex": "SexHundLang",
+    "Breed Mix": "RasseMischlingLang",
+}
+#     "Breed Type": "RassentypLang",
+#     "Dog's Age": "AlterVHundLang",
+#     "Fur Color": "HundefarbeText",
+# }
+
 selection_x = l_col.selectbox("X-Axis Feature", options=feature_opts)
 selection_y = l_col.selectbox(
     "Y-Axis Feature",
@@ -225,6 +235,10 @@ fig = make_subplots(
     subplot_titles=list(grouped.groups.keys()),
     shared_xaxes=True,
     shared_yaxes=True,
+    x_title=selection_x,
+    y_title=selection_y,
+    vertical_spacing=0.075,
+    horizontal_spacing=0.045,
 )
 
 for i, (name, group) in enumerate(grouped):
@@ -240,64 +254,30 @@ for i, (name, group) in enumerate(grouped):
         col=col,
     )
 
-fig.update_layout(width=900, height=600, coloraxis={"colorscale": cmap_cont})
+fig.update_layout(
+    title={
+        "text": f"Dogs per {selection_x} and {selection_y} over Time",
+        "font": {"size": 28},
+    },
+    width=w + 1 / 2 * h,
+    height=4 / 3 * h,
+    coloraxis={
+        "colorscale": cmap_cont,
+        "colorbar": {"title": {"text": "Number<br>of Dogs"}},
+    },
+    margin={"l": 123, "b": 100},
+)
 
-st.plotly_chart(fig)
+fig.layout.annotations[-2].update(y=-0.08)
+fig.layout.annotations[-1].update(x=-0.075)
 
-st.dataframe(df)
+r_col.plotly_chart(fig)
 
-# feature_opts = ["Age Group", "Owner's Sex"]
-# selection = st.selectbox("Feature", options=feature_opts)
+st.write(
+    "Data provided by [Stadt Zürich Open Data](https://data.stadt-zuerich.ch/dataset/sid_stapo_hundebestand_od1001)"
+)
+st.write(
+    "Colorscale *roma* by [Fabio Cramieri](https://www.fabiocrameri.ch/colourmaps/)"
+)
 
-# if selection == "Age Group":
-#     feature = "AlterV10Lang"
-# elif selection == "Owner's Sex":
-#     feature = "SexLang"
-
-# feat_nod = df.groupby(["StichtagDatJahr", feature])["AnzHunde"].sum().reset_index()
-# if selection == "Age Group":
-#     feat_nod = feat_nod[feat_nod["AlterV10Lang"] != "Unbekannt"]
-
-# feat_nod_piv = feat_nod.pivot(
-#     index="StichtagDatJahr", columns=feature, values="AnzHunde"
-# )
-
-# fig = go.Figure()
-
-# fig.add_heatmap(
-#     x=feat_nod_piv.columns,
-#     y=feat_nod_piv.index,
-#     z=feat_nod_piv,
-#     colorscale=cmap_cont,
-#     colorbar_title="Total Number<br>of Dogs",
-#     hovertemplate="Age Group: %{x}<br>Year: %{y}<br>NoD: %{z}<extra></extra>",
-# )
-
-# fig.update_layout(
-#     title={"text": f"Dogs per {selection} over Time", "font": {"size": 28}},
-#     xaxis={"title": {"text": selection, "font": {"size": 24}}},
-#     yaxis={"title": {"text": "Year", "font": {"size": 24}}},
-#     width=900,
-#     height=600,
-# )
-# checked = st.sidebar.checkbox("Show stuff")
-
-# if checked:
-#     st.subheader("That stuff from the sidebar")
-
-# years = ["All"] + sorted(df["year"].unique)
-# year = st.selectbox("Choose a Year", years)
-
-# mpl_fig
-
-# st.pyplot(mpl_fig)
-
-# options = ["Option 1", "Option 2"]
-# something = left_column.selectbox("Make a choice", options)
-
-# somthing_else = right_column.selectbox("Make another choice", options)
-
-# if something == "Option 1":
-#     st.write("You chose Option 1")
-# else:
-#     st.write("You chose Option 2")
+# st.dataframe(df)
